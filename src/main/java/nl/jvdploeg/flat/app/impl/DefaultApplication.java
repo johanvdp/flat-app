@@ -9,8 +9,6 @@ import java.util.function.UnaryOperator;
 import nl.jvdploeg.exception.Checks;
 import nl.jvdploeg.flat.Change;
 import nl.jvdploeg.flat.Model;
-import nl.jvdploeg.flat.Path;
-import nl.jvdploeg.flat.Version;
 import nl.jvdploeg.flat.app.Application;
 import nl.jvdploeg.flat.app.Job;
 import nl.jvdploeg.flat.app.Rule;
@@ -36,19 +34,12 @@ public final class DefaultApplication implements Application {
     };
   }
 
-  public static Supplier<Version> createDefaultVersionFactory() {
-    return new SequentialVersionFactory();
-  }
-
   private Model<?> model;
   private Validation validation;
   private Rule rule;
 
   private UnaryOperator<Model<?>> cloneModelMethod = createDefaultCloneModelMethod();
-
   private Supplier<Transaction> transactionFactory = createDefaultTransactionFactory();
-
-  private Supplier<Version> versionFactory = createDefaultVersionFactory();
 
   public DefaultApplication() {
   }
@@ -65,9 +56,6 @@ public final class DefaultApplication implements Application {
         // apply changes to actual model
         final List<Change> changes = transaction.getChanges();
         ModelUtils.applyChanges(model, changes);
-        // one version for the whole model (maintained in the root node)
-        final Version version = versionFactory.get();
-        model.setVersion(Path.EMPTY, version);
       }
     }
   }
@@ -101,10 +89,6 @@ public final class DefaultApplication implements Application {
     this.validation = validation;
   }
 
-  public void setVersionFactory(final Supplier<Version> versionFactory) {
-    this.versionFactory = versionFactory;
-  }
-
   @Override
   public void start() {
     Checks.STATE.notNull(model, "model");
@@ -112,7 +96,6 @@ public final class DefaultApplication implements Application {
     Checks.STATE.notNull(rule, "rule");
     Checks.STATE.notNull(cloneModelMethod, "cloneModelMethod");
     Checks.STATE.notNull(transactionFactory, "transactionFactory");
-    Checks.STATE.notNull(versionFactory, "versionFactory");
   }
 
   @Override

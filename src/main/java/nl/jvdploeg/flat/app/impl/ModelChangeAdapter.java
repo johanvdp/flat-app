@@ -10,6 +10,7 @@ import nl.jvdploeg.flat.Node;
 import nl.jvdploeg.flat.Path;
 import nl.jvdploeg.flat.Version;
 import nl.jvdploeg.flat.impl.DefaultChange;
+import nl.jvdploeg.object.NullSafe;
 
 @SuppressWarnings("rawtypes")
 public final class ModelChangeAdapter implements Model {
@@ -86,7 +87,9 @@ public final class ModelChangeAdapter implements Model {
   public String setValue(final Path path, final String newValue) {
     final Version oldVersion = model.getVersion(path);
     final String oldValue = model.setValue(path, newValue);
-    changes.add(DefaultChange.set(path, oldVersion, newValue));
+    if (!NullSafe.equals(oldValue, newValue)) {
+      changes.add(DefaultChange.set(path, oldVersion, newValue));
+    }
     return oldValue;
   }
 
