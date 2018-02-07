@@ -12,13 +12,13 @@ import nl.jvdploeg.flat.Model;
  */
 public interface Validation {
 
-  /** Mainly for testing. */
-  static Validation always(final boolean valid) {
-    return (model, changes) -> valid;
+  interface ValidationResult {
+
+    boolean isValid();
   }
 
   /**
-   * Check if the changes performed on the model are valid.
+   * Evaluate the changes performed on the model.
    */
-  boolean isValid(Model<?> model, List<Change> changes);
+  ValidationResult evaluate(Model<?> model, List<Change> changes);
 }

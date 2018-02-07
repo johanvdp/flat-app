@@ -14,6 +14,7 @@ import nl.jvdploeg.flat.app.Job;
 import nl.jvdploeg.flat.app.Rule;
 import nl.jvdploeg.flat.app.Transaction;
 import nl.jvdploeg.flat.app.Validation;
+import nl.jvdploeg.flat.app.Validation.ValidationResult;
 import nl.jvdploeg.flat.impl.DefaultModel;
 import nl.jvdploeg.flat.impl.Enforce;
 import nl.jvdploeg.flat.util.ModelUtils;
@@ -110,8 +111,8 @@ public final class DefaultApplication implements Application {
     }
     // validate changes after job execution
     final List<Change> changes = transaction.getChanges();
-    final boolean valid = validation.isValid(clone, changes);
-    if (!valid) {
+    final ValidationResult result = validation.evaluate(clone, changes);
+    if (!result.isValid()) {
       // abort job execution
       return false;
     }

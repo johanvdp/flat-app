@@ -23,15 +23,13 @@ public class CompositeValidation implements Validation {
   }
 
   @Override
-  public final boolean isValid(final Model<?> model, final List<Change> changes) {
+  public final ValidationResult evaluate(final Model<?> model, final List<Change> changes) {
+    final DefaultValidationResult result = new DefaultValidationResult();
     for (final Validation validator : validators) {
-      if (!validator.isValid(model, changes)) {
-        // one invalid
-        return false;
-      }
+      final ValidationResult oneResult = validator.evaluate(model, changes);
+      result.merge(oneResult);
     }
-    // all valid
-    return true;
+    return result;
   }
 
   public final void remove(final Validation validator) {
